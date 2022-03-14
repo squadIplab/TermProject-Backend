@@ -24,3 +24,7 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
+
+# commit only empty static
+static/*
+!static/.gitkeep 
