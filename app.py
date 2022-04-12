@@ -76,6 +76,40 @@ def binarize():
         cv2.imwrite('static/' + processedPath, img1)
         return jsonify({'result': 'success'})
 
+@app.route("/text_ratio", methods=["POST"])
+def text_ratio():
+    if request.method == "POST":
+        img = cv2.imdecode(np.frombuffer(request.files["input"].read(), np.uint8), cv2.IMREAD_UNCHANGED)
+        if len(img.shape) == 3:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+        white_pixels = 0
+        for i in range(len(img)):
+            for j in range(len(img[0])):
+                if img[i][j] == 255:
+                    white_pixels += 1
+
+        total_pixels = len(img) * len(img[0])
+        text_ratio = min(white_pixels, total_pixels - white_pixels) / total_pixels
+        text_ratio = float("{:.3f}".format(text_ratio))
+
+        return jsonify({"result": "success", "text_ratio": text_ratio})
+
+
+@app.route("/eed", methods=["POST"])
+def eed():
+    if request.method == "POST":
+        fileName = request.form["name"]
+        processedPath = fileName + "_eed.png"
+        img = cv2.imdecode(np.frombuffer(request.files["input"].read(), np.uint8), cv2.IMREAD_UNCHANGED)
+
+        kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+        image_sharp = cv2.filter2D(src=img, ddepth=-1, kernel=kernel)
+
+        cv2.imwrite("static/" + processedPath, img)
+        return jsonify({"result": "success"})
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3001, debug=True)
