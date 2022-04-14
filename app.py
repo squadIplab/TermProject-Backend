@@ -29,26 +29,12 @@ def add2Tray():
         cv2.imwrite('static/' + processedPath, img)
         return jsonify({'result': 'success'})
 
-
-@app.route("/grayscale", methods=['POST'])
-def convert2Gray():
-    if request.method == 'POST':
-        fileName = request.form['name']
-        processedPath = fileName + "_grayscale.png"
-        img = cv2.imdecode(np.frombuffer(
-            request.files['input'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
-        img1 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        cv2.imwrite('static/' + processedPath, img1)
-        return jsonify({'result': 'success'})
-
-
 @app.route("/chan_vese", methods=['POST'])
 def chanVese():
     if request.method == 'POST':
         fileName = request.form['name']
         iterations = request.form['iterations']
-        processedPath1 = fileName + "_" + iterations + "_cv1.png"
-        processedPath2 = fileName + "_" + iterations + "_cv2.png"
+        processedPath = fileName + "_" + iterations + "_cv.png"
         iterations = int(iterations)
         img = cv2.imdecode(np.frombuffer(
             request.files['input'].read(), np.uint8), cv2.IMREAD_UNCHANGED)
@@ -56,8 +42,7 @@ def chanVese():
         img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
         cv = chan_vese(img, mu=0.25, lambda1=1, lambda2=1, tol=1e-3, max_num_iter=iterations,
                        dt=0.5, init_level_set="checkerboard", extended_output=True)
-        mpimg.imsave('static/' + processedPath1, cv[0], cmap='gray')
-        mpimg.imsave('static/' + processedPath2, cv[1], cmap='gray')
+        mpimg.imsave('static/' + processedPath, cv[1], cmap='gray')
         return jsonify({'result': 'success'})
 
 
